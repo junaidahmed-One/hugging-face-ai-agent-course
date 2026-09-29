@@ -1,7 +1,7 @@
 from huggingface_hub import login
-from smolagents import CodeAgent, tool, InferenceClientModel
+from smolagents import CodeAgent, InferenceClientModel, tool
 
-login(skip_if_logged_in=False)
+login(skip_if_logged_in=True)
 
 
 @tool
