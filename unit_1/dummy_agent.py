@@ -6,18 +6,17 @@ from huggingface_hub import InferenceClient
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-client = InferenceClient(model="moonshotai/Kimi-K2.5", token=HF_TOKEN)
+client = InferenceClient( model="moonshotai/Kimi-K2.5", token=HF_TOKEN)
 
 output = client.chat.completions.create(
     messages=[
-        {"role":"user", "content":"The Capital of france is"},
+        {"role": "user", "content": "The Capital of france is"},
     ],
     stream=False,
     max_tokens=1024,
-    extra_body={'thinking':{'type':'disabled'}}
+    extra_body={"thinking": {"type": "disabled"}},
 )
 
-print(output.choices[0].message.content)
 
 SYSTEM_PROMPT = """Answer the following questions as best you can. You have access to the following tools:
 
@@ -55,8 +54,8 @@ Final Answer: the final answer to the original input question
 Now begin! Reminder to ALWAYS use the exact characters `Final Answer:` when you provide a definitive answer. """
 
 messages = [
-    {"role":"system", "content": SYSTEM_PROMPT},
-    {"role":"user", "content":"What's the weather in London"}
+    {"role": "system", "content": SYSTEM_PROMPT},
+    {"role": "user", "content": "What's the weather in London"},
 ]
 
 print(messages)
@@ -65,7 +64,7 @@ output2 = client.chat.completions.create(
     messages=messages,
     stream=False,
     max_tokens=200,
-    extra_body={'thinking':{'type':'disabled'}}
+    extra_body={"thinking": {"type": "disabled"}},
 )
 
 ### As you can see the response, its hallicunating and generates its own reponse.
@@ -74,29 +73,36 @@ print(output2.choices[0].message.content)
 output3 = client.chat.completions.create(
     messages=messages,
     max_tokens=150,
-    stop=["Observation:"], # Let's stop before any actual function is called
-    extra_body={'thinking':{'type':'disabled'}}
+    stop=["Observation:"],  # Let's stop before any actual function is called
+    extra_body={"thinking": {"type": "disabled"}},
 )
 
 print(output3.choices[0].message.content)
+
 
 # Dummy function
 def get_weather(location):
     return f"the weather in {location} is sunny with low temperatures. \n"
 
-get_weather('London')
 
-messages2=[
+get_weather("London")
+
+messages2 = [
     {"role": "system", "content": SYSTEM_PROMPT},
     {"role": "user", "content": "What's the weather in London ?"},
-    {"role": "assistant", "content": output3.choices[0].message.content + "Observation:\n" + get_weather('London')},
+    {
+        "role": "assistant",
+        "content": output3.choices[0].message.content,        
+        "Observation":,
+        get_weather("London"),
+    },
 ]
 
 output4 = client.chat.completions.create(
     messages=messages2,
     stream=False,
     max_tokens=200,
-    extra_body={'thinking': {'type': 'disabled'}},
+    extra_body={"thinking": {"type": "disabled"}},
 )
 
 print(output4.choices[0].message.content)
